@@ -19,7 +19,7 @@ def GitPull(): list<any>
   var results = []
   const current = getcwd()
   for p in plugins
-    const s = p.opt ? ['opt', 'start'] : ['start', 'opt']
+    const s = p.opt || !!p.trigger ? ['opt', 'start'] : ['start', 'opt']
     const path = expand($'{g:ezpack_home}/{s[0]}/{p.name}')
     const extra = expand($'{g:ezpack_home}/{s[1]}/{p.name}')
     if isdirectory(extra) && !isdirectory(path)
