@@ -4,16 +4,8 @@ g:ezpack_home = expand($'{&pp->split(',')[0]}/pack/ezpack')
 
 var plugins = []
 
-def GetPluginName(url: string): string
-  return url->matchlist('.*/\([^/]*\)$')[1]->substitute('\.git$', '', '')
-enddef
-
-def GetPath(url: string, opt: string): string
-  return $'{g:ezpack_home}/{opt}/{GetPluginName(url)}'
-enddef
-
 def MkParent(path: string)
-  system($'mkdir -p {path->substitute('/[^/]*$', '', '')}')
+  mkdir($'{path->substitute('/[^/]*$', '', '')}', 'p')
 enddef
 
 def GitPull(): list<any>
@@ -22,20 +14,19 @@ def GitPull(): list<any>
   var i = 0
   for p in plugins
     i += 1
-    const path = expand(GetPath(p.url, !p.trigger ? 'start' : 'opt'))
-    const extra = expand(GetPath(p.url, !!p.trigger ? 'start' : 'opt'))
+    const s = !p.trigger ? ['start', 'opt'] : ['opt', 'start']
+    const path = expand($'{g:ezpack_home}/{s[0]}/{p.name}')
+    const extra = expand($'{g:ezpack_home}/{s[1]}/{p.name}')
     if isdirectory(extra) && !isdirectory(path)
       rename(extra, path)
     endif
-    var label = 'pull'
     var gitcmd = $'git pull {path}'
     if !isdirectory(path)
-      cloned += [path]
       MkParent(path)
-      label = 'clone'
       gitcmd = $'git clone {p.url} {path}'
+      cloned += [path]
     endif
-    echo $'Ezpack: ({i}/{l}) {label} {p.name}'
+    echo $'Ezpack: ({i}/{l}) {gitcmd->split(' ')[1]} {p.label}'
     const result = system(gitcmd)
     if v:shell_error !=# 0 && v:shell_error !=# 128
       echoe gitcmd
@@ -62,7 +53,7 @@ def CreateAutocmd(): string
     if !p.trigger
       continue
     endif
-    lines += [$"au ezpack {p.trigger} packadd {GetPluginName(p.url)}"]
+    lines += [$"au ezpack {p.trigger} packadd {p.name}"]
   endfor
   lines += ['augroup END']
   const path = expand($'{g:ezpack_home}/start/_/plugin/_.vim')
@@ -80,7 +71,8 @@ enddef
 
 export def Ezpack(...fargs: list<any>)
   plugins += [{
-    name: fargs[0],
+    label: fargs[0],
+    name: fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', ''),
     url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
     trigger: fargs[1 : ]->join(' '),
   }]
