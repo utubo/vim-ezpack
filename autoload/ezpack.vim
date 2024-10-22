@@ -37,29 +37,25 @@ def GitPull(): list<any>
       err: [],
     }
     results += [r]
-    if has('win32')
-      job_start(gitcmd, {
-        cwd: cwd,
-        exit_cb: (job, status) => {
-          ++job_count
-          redraw
-          echo $'Ezpack: ({job_count}/{l}) {gitcmd->split(' ')[1]} {p.label}'
-        },
-        err_cb: (ch, msg) => {
-          if msg !~# '^Cloning'
-            r.err += [msg]
-          endif
-        }
-      })
-    else
-      # too many jobs kill vim on sakura rental server.
+    const ExitCb = (job, status) => {
       ++job_count
       redraw
       echo $'Ezpack: ({job_count}/{l}) {gitcmd->split(' ')[1]} {p.label}'
+    }
+    const ErrCb = (ch, msg) => {
+      if msg !~# '^Cloning'
+        r.err += [msg]
+      endif
+    }
+    if has('win32')
+      job_start(gitcmd, { cwd: cwd, exit_cb: ExitCb, err_cb: ErrCb })
+    else
+      # too many jobs kill vim on sakura rental server.
+      ExitCb(0, 0)
       chdir(cwd)
       const msg = system(gitcmd)
       if v:shell_error !=# 0 && v:shell_error !=# 128
-        r.err += [msg]
+        ErrCb(0, msg)
       endif
     endif
   endfor
