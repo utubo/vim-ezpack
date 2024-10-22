@@ -76,7 +76,7 @@ export def Ezpack(...fargs: list<any>)
     label: fargs[0],
     name: fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', ''),
     url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
-    opt: get(fargs, 1, '') ==# '<opt>',
+    opt: opt,
     trigger: trigger,
   }]
 enddef
