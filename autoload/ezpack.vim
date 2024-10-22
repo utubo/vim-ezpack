@@ -17,6 +17,7 @@ def GitPull(): list<any>
   var job_count = 0
   var cloned = []
   var results = []
+  const current = getcwd()
   for p in plugins
     const s = p.opt ? ['opt', 'start'] : ['start', 'opt']
     const path = expand($'{g:ezpack_home}/{s[0]}/{p.name}')
@@ -36,20 +37,32 @@ def GitPull(): list<any>
       err: [],
     }
     results += [r]
-    job_start(gitcmd, {
-      cwd: cwd,
-      exit_cb: (job, status) => {
-        ++job_count
-        redraw
-        echo $'Ezpack: ({job_count}/{l}) {gitcmd->split(' ')[1]} {p.label}'
-      },
-      err_cb: (ch, msg) => {
-        if msg !~# '^Cloning'
-          r.err += [msg]
-        endif
-      }
-    })
+    if has('win32')
+      job_start(gitcmd, {
+        cwd: cwd,
+        exit_cb: (job, status) => {
+          ++job_count
+          redraw
+          echo $'Ezpack: ({job_count}/{l}) {gitcmd->split(' ')[1]} {p.label}'
+        },
+        err_cb: (ch, msg) => {
+          if msg !~# '^Cloning'
+            r.err += [msg]
+          endif
+        }
+      })
+    else
+      ++job_count
+      redraw
+      echo $'Ezpack: ({job_count}/{l}) {gitcmd->split(' ')[1]} {p.label}'
+      chdir(cwd)
+      const msg = system(gitcmd)
+      if v:shell_error !=# 0 && v:shell_error !=# 128
+        r.err += [msg]
+      endif
+    endif
   endfor
+  chdir(current)
   if job_count < l
     redraw
     echo $'Ezpack: (0/{l}) wait for install.'
