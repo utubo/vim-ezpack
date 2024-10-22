@@ -57,7 +57,7 @@ EXAMPLS							*ezpack-examples*
 	 EzpackInstall
 	endif
 <
-~/.vim/after/vimrc/ezpack.vim
+~/.vim/autoload/vimrc/ezpack.vim
 >
 	vim9script
 	packadd vim-ezpack
