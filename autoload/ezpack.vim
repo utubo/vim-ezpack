@@ -32,7 +32,7 @@ def GitPull(): list<any>
       echoe gitcmd
       echoe result
     endif
-    redraw!
+    redraw
   endfor
   return cloned
 enddef
