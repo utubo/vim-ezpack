@@ -65,7 +65,7 @@ def CreateAutocmd(): string
     lines += [$"au ezpack {p.trigger} packadd {GetPluginName(p.url)}"]
   endfor
   lines += ['augroup END']
-  const path = expand($'{g:ezpack_home}/start/_/plugins/ezpack.vim')
+  const path = expand($'{g:ezpack_home}/start/_/plugin/_.vim')
   MkParent(path)
   writefile(lines, path)
   return path
