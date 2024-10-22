@@ -34,29 +34,26 @@ def GitPull(): list<any>
     endif
     var r = {
       label: p.label,
-      err: [],
+      out: [],
+      status: -1,
     }
     results += [r]
     const ExitCb = (job, status) => {
       ++job_count
+      r.status = status
       redraw
       echo $'Ezpack: ({job_count}/{l}) {gitcmd->split(' ')[1]} {p.label}'
     }
-    const ErrCb = (ch, msg) => {
-      if msg !~# '^Cloning'
-        r.err += [msg]
-      endif
-    }
+    const OutCb = (ch, msg) => add(r.out, msg)
+    const ErrCb = (ch, msg) => add(r.out, msg)
     if has('win32')
       job_start(gitcmd, { cwd: cwd, exit_cb: ExitCb, err_cb: ErrCb })
     else
       # too many jobs kill vim on sakura rental server.
       ExitCb(0, 0)
       chdir(cwd)
-      const msg = system(gitcmd)
-      if v:shell_error !=# 0 && v:shell_error !=# 128
-        ErrCb(0, msg)
-      endif
+      r.out += [system(gitcmd)]
+      r.status = v:shell_error
     endif
   endfor
   chdir(current)
@@ -67,11 +64,9 @@ def GitPull(): list<any>
   while job_count < l
     sleep 50m
   endwhile
-  for r in results->filter((i, v) => !!v.err)
+  for r in results->filter((i, r) => r.status !=# 0 && r.status !=# 128)
     echoe r.label
-    for e in r.err
-      echoe e
-    endfor
+    echoe r.out->join("\n")
   endfor
   return cloned
 enddef
