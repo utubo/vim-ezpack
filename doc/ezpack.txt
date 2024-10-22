@@ -50,8 +50,7 @@ EXAMPLS							*ezpack-examples*
 .vimrc
 >
 	vim9script
-	command! EzpackInstall packadd vim-ezpack|ezpack#Install()
-	au vimrc User EzpackInstallPre vimrc#ezpack#ListPlugins()
+	command! EzpackInstall vimrc#ezpack#Install()
 	g:ezpack_home = expand($'{&pp->split(',')[0]}/pack/ezpack')
 	if !isdirectory(g:ezpack_home)
 	 system($'git clone https://github.com/utubo/vim-ezpack.git {g:ezpack_home}/opt/vim-ezpack')
@@ -61,14 +60,18 @@ EXAMPLS							*ezpack-examples*
 ~/.vim/after/vimrc/ezpack.vim
 >
 	vim9script
+	packadd vim-ezpack
 	command! -nargs=* Ezpack ezpack#Ezpack(<f-args>)
-	export def ListPlugins()
-		ezpack#Init()
-		Ezpack utubo/vim-ezpack <opt>
-		Ezpack example/install_to_start
-		Ezpack example/install_to_opt <opt>
-		Ezpack example/install_to_opt_packadd_on_vimenter VimEnter *
-		Ezpack example/u_can_set_any_event Filetype csv ++once
+
+	ezpack#Init()
+	Ezpack utubo/vim-ezpack <opt>
+	Ezpack example/install_to_start
+	Ezpack example/install_to_opt <opt>
+	Ezpack example/install_to_opt_packadd_on_vimenter VimEnter *
+	Ezpack example/u_can_set_any_event Filetype csv ++once
+
+	export def Install()
+	  ezpack#Install()
 	enddef
 <
 - Plugins are installed to `~/.vim/pack/ezpack/start` or `~/.vim/pack/ezpack/opt`.

@@ -113,7 +113,9 @@ export def Ezpack(...fargs: list<any>)
 enddef
 
 export def Install()
-  doautocmd User EzpackInstallPre
+  if exists('#User#EzpackInstallPre')
+    doautocmd User EzpackInstallPre
+  endif
   const cloned = GitPull()
   const autoCmdPath = CreateAutocmd()
   ExecuteCloned(cloned)
