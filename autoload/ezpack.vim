@@ -45,14 +45,13 @@ def GitPull(): list<any>
       echo $'Ezpack: ({job_count}/{l}) {gitcmd->split(' ')[1]} {p.label}'
     }
     const OutCb = (ch, msg) => add(r.out, msg)
-    const ErrCb = (ch, msg) => add(r.out, msg)
     if has('win32')
-      job_start(gitcmd, { cwd: cwd, exit_cb: ExitCb, err_cb: ErrCb })
+      job_start(gitcmd, { cwd: cwd, exit_cb: ExitCb, out_cb: OutCb, err_cb: OutCb })
     else
       # too many jobs kill vim on sakura rental server.
-      ExitCb(0, 0)
       chdir(cwd)
-      r.out += [system(gitcmd)]
+      ExitCb(0, 0)
+      OubCb(0, [system(gitcmd)])
       r.status = v:shell_error
     endif
   endfor
@@ -65,8 +64,7 @@ def GitPull(): list<any>
     sleep 50m
   endwhile
   for r in results->filter((i, r) => r.status !=# 0 && r.status !=# 128)
-    echoe r.label
-    echoe r.out->join("\n")
+    echoe [r.label, r.out]->flattennew()->join(' ') # NOTE: echoe does not linebreak
   endfor
   return cloned
 enddef
