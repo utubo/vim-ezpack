@@ -22,38 +22,49 @@ License : MIT license  {{{
 }}}
 
 ==============================================================================
-CONTENTS					*hlpairs-contents*
+CONTENTS					*ezpack-contents*
 
-EXAMPLES			|ezpack-examples|
+INTRODUCTION					|ezpack-introduction|
+USAGE						|ezpack-usage|
+  EXAMPLES					|ezpack-examples|
+
+==============================================================================
+INTRODUCTION					*ezpack-introduction*
+
+*ezpack* is a simple vim plugin manager.
+
+Latest version:
+https://github.com/utubo/vim-ezpack.vim
+
+==============================================================================
+USAGE						*ezpack-usage*
+
+Requirements
+	Vim 9.1 or later
 
 ------------------------------------------------------------------------------
 EXAMPLS							*ezpack-examples*
 
 .vimrc
 >
-	g:ezpack_home = $"{has('win32') ? '~/vimfiles' : '~/.vim'}/pack/ezpack"
+	vim9script
+	command! EzpackInstall packadd vim-ezpack|ezpack#Install()
+	au vimrc User EzpackInstallPre vimrc#ezpack#ListPlugins()
+	g:ezpack_home = expand($"{has('win32') ? '~/vimfiles' : '~/.vim'}/pack/ezpack")
 	if !isdirectory(g:ezpack_home)
-	  const path = '{g:ezpack_home}/opt/vim-ezpack/autoload/ezpack.vim'
-	  system($'git clone https://github.com/utubo/vim-ezpack.git {g:ezpack_home}/opt/vim-ezpack')
-	  packadd vim-ezpack
-	  vimrc#ezpack#Install()
+	 const path = '{g:ezpack_home}/opt/vim-ezpack/autoload/ezpack.vim'
+	 system($'git clone https://github.com/utubo/vim-ezpack.git {g:ezpack_home}/opt/vim-ezpack')
+	 EzpackInstall
 	endif
-	command EzpackUpdate call ezpack#Update()
 <
 ~/.vim/after/vimrc/ezpack.vim
 >
 	vim9script
-
-	packadd vim-ezpack
 	command! -nargs=* Ezpack ezpack#Ezpack(<f-args>)
-
-	ezpack#Init()
-
-	Ezpack utubo/vim-ezpack
-	Ezpack utubo/example_plugin_for_csv Fietype csv
-
-	export def Install()
-	  ezpack#Install()
+	export def ListPlugins()
+		ezpack#Init()
+		Ezpack utubo/vim-ezpack
+		Ezpack utubo/example_plugin_for_csv Filetype csv
 	enddef
 
 ==============================================================================
