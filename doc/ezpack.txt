@@ -65,12 +65,14 @@ EXAMPLS							*ezpack-examples*
 	export def ListPlugins()
 		ezpack#Init()
 		Ezpack utubo/vim-ezpack <opt>
-		Ezpack example/install_to_pack_start
-		Ezpack example/install_to_pack_opt <opt>
+		Ezpack example/install_to_start
+		Ezpack example/install_to_opt <opt>
 		Ezpack example/install_to_opt_packadd_on_vimenter VimEnter *
 		Ezpack example/u_can_set_any_event Filetype csv ++once
 	enddef
 <
+- Plugins are installed to `~/.vim/pack/ezpack/start` or `~/.vim/pack/ezpack/opt`.
+- Autocmds for packadd are `~/.vim/pack/ezpack/start/_/plugins/_.vim`
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:
