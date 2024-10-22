@@ -52,6 +52,7 @@ def GitPull(): list<any>
         }
       })
     else
+      # too many jobs kill vim on sakura rental server.
       ++job_count
       redraw
       echo $'Ezpack: ({job_count}/{l}) {gitcmd->split(' ')[1]} {p.label}'
