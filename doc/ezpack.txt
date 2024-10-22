@@ -65,9 +65,9 @@ EXAMPLS							*ezpack-examples*
 	export def ListPlugins()
 		ezpack#Init()
 		Ezpack utubo/vim-ezpack <opt>
-		Ezpack example/installed_to_pack_start
-		Ezpack example/installed_to_pack_opt <opt>
-		Ezpack example/installed_to_opt_packadd_on_vimenter VimEnter *
+		Ezpack example/install_to_pack_start
+		Ezpack example/install_to_pack_opt <opt>
+		Ezpack example/install_to_opt_packadd_on_vimenter VimEnter *
 		Ezpack example/u_can_set_any_event Filetype csv ++once
 	enddef
 <
