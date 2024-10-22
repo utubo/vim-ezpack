@@ -1,0 +1,60 @@
+*ezpack.txt*	a summary
+
+Author  : utubo
+License : MIT license  {{{
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+}}}
+
+==============================================================================
+CONTENTS					*hlpairs-contents*
+
+EXAMPLES			|ezpack-examples|
+
+------------------------------------------------------------------------------
+EXAMPLS							*ezpack-examples*
+
+.vimrc
+>
+	g:ezpack_home = $"{has('win32') ? '~/vimfiles' : '~/.vim'}/pack/ezpack"
+	if !isdirectory(g:ezpack_home)
+	  const path = '{g:ezpack_home}/opt/vim-ezpack/autoload/ezpack.vim'
+	  system($'git clone https://github.com/utubo/vim-ezpack.git {g:ezpack_home}/opt/vim-ezpack')
+	  packadd vim-ezpack
+	  vimrc#ezpack#Install()
+	endif
+	command EzpackUpdate call ezpack#Update()
+<
+~/.vim/after/vimrc/ezpack.vim
+>
+	vim9script
+
+	packadd vim-ezpack
+	command! -nargs=* Ezpack ezpack#Ezpack(<f-args>)
+
+	ezpack#Init()
+
+	Ezpack utubo/vim-ezpack
+	Ezpack utubo/example_plugin_for_csv Fietype csv
+
+	export def Install()
+	  ezpack#Install()
+	enddef
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:noet:fen:
