@@ -11,9 +11,9 @@ def MkParent(path: string): string
 enddef
 
 def GitPull(): list<any>
-  redraw
-  echo 'Ezpack: start jobs.'
   const l = plugins->len()
+  redraw
+  echo $'Ezpack: (0/{l}) wait for install.'
   var job_count = 0
   var cloned = []
   var results = []
@@ -49,16 +49,11 @@ def GitPull(): list<any>
     else
       # too many jobs kill vim on sakura rental server.
       chdir(cwd)
-      ExitCb(0, 0)
       OutCb(0, [system(gitcmd)])
-      r.status = v:shell_error
+      ExitCb(0, v:shell_error)
     endif
   endfor
   chdir(current)
-  if job_count < l
-    redraw
-    echo $'Ezpack: (0/{l}) wait for install.'
-  endif
   while job_count < l
     sleep 50m
   endwhile
