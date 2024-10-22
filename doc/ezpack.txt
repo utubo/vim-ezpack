@@ -33,6 +33,7 @@ INTRODUCTION					*ezpack-introduction*
 
 *ezpack* is a simple vim plugin manager.
 [!]This is customized for my use, so this is not recommended.
+[Thx]Inspired by dein and Jetpack.
 
 Latest version:
 https://github.com/utubo/vim-ezpack.vim
