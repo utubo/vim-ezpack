@@ -1,6 +1,6 @@
 vim9script
 
-g:ezpack_home = expand(get(g:, 'ezpack_home', $"{has('win32') ? '~/vimfiles' : '~/.vim'}/pack/ezpack"))
+g:ezpack_home = expand($'{&pp->split(',')[0]}/pack/ezpack')
 
 var plugins = []
 
