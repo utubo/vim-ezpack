@@ -4,35 +4,64 @@ g:ezpack_home = expand($'{&pp->split(',')[0]}/pack/ezpack')
 
 var plugins = []
 
-def MkParent(path: string)
-  mkdir($'{path->substitute('[\/][^\/]*$', '', '')}', 'p')
+def MkParent(path: string): string
+  const p = $'{path->substitute('[\/][^\/]*$', '', '')}'
+  mkdir(p, 'p')
+  return p
 enddef
 
 def GitPull(): list<any>
-  var cloned = []
+  redraw
+  echo 'Ezpack: start jobs.'
   const l = plugins->len()
-  var i = 0
+  var job_count = 0
+  var cloned = []
+  var results = []
   for p in plugins
-    i += 1
     const s = p.opt ? ['opt', 'start'] : ['start', 'opt']
     const path = expand($'{g:ezpack_home}/{s[0]}/{p.name}')
     const extra = expand($'{g:ezpack_home}/{s[1]}/{p.name}')
     if isdirectory(extra) && !isdirectory(path)
       rename(extra, path)
     endif
-    var gitcmd = $'git pull {path}'
+    var cwd = path
+    var gitcmd = $'git pull'
     if !isdirectory(path)
-      MkParent(path)
-      gitcmd = $'git clone {p.url} {path}'
+      cwd = MkParent(path)
+      gitcmd = $'git clone --depth=1 {p.url}'
       cloned += [path]
     endif
-    echo $'Ezpack: ({i}/{l}) {gitcmd->split(' ')[1]} {p.label}'
-    const result = system(gitcmd)
-    if v:shell_error !=# 0 && v:shell_error !=# 128
-      echoe gitcmd
-      echoe result
-    endif
+    var r = {
+      label: p.label,
+      err: [],
+    }
+    results += [r]
+    job_start(gitcmd, {
+      cwd: cwd,
+      exit_cb: (job, status) => {
+        ++job_count
+        redraw
+        echo $'Ezpack: ({job_count}/{l}) {gitcmd->split(' ')[1]} {p.label}'
+      },
+      err_cb: (ch, msg) => {
+        if msg !~# '^Cloning'
+          r.err += [msg]
+        endif
+      }
+    })
+  endfor
+  if job_count < l
     redraw
+    echo $'Ezpack: (0/{l}) wait for install.'
+  endif
+  while job_count < l
+    sleep 50m
+  endwhile
+  for r in results->filter((i, v) => !!v.err)
+    echoe r.label
+    for e in r.err
+      echoe e
+    endfor
   endfor
   return cloned
 enddef
@@ -87,6 +116,7 @@ export def Install()
   const autoCmdPath = CreateAutocmd()
   ExecuteCloned(cloned)
   execute 'source' autoCmdPath
+  redraw
   echo 'Ezpack: COMPLETED.'
 enddef
 
