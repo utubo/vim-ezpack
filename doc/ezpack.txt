@@ -63,7 +63,8 @@ EXAMPLS							*ezpack-examples*
 	command! -nargs=* Ezpack ezpack#Ezpack(<f-args>)
 	export def ListPlugins()
 		ezpack#Init()
-		Ezpack utubo/vim-ezpack
+		Ezpack utubo/vim-ezpack <opt>
+		Ezpack utubo/example_plugin_load_at_start
 		Ezpack utubo/example_plugin_for_csv Filetype csv
 	enddef
 

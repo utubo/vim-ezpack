@@ -14,7 +14,7 @@ def GitPull(): list<any>
   var i = 0
   for p in plugins
     i += 1
-    const s = !p.trigger ? ['start', 'opt'] : ['opt', 'start']
+    const s = p.opt ? ['opt', 'start'] : ['start', 'opt']
     const path = expand($'{g:ezpack_home}/{s[0]}/{p.name}')
     const extra = expand($'{g:ezpack_home}/{s[1]}/{p.name}')
     if isdirectory(extra) && !isdirectory(path)
@@ -70,11 +70,14 @@ export def Init()
 enddef
 
 export def Ezpack(...fargs: list<any>)
+  const opt = get(fargs, 1, '') ==# '<opt>'
+  const trigger = fargs[(opt ? 2 : 1) : ]->join(' ')
   plugins += [{
     label: fargs[0],
     name: fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', ''),
     url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
-    trigger: fargs[1 : ]->join(' '),
+    opt: get(fargs, 1, '') ==# '<opt>',
+    trigger: trigger,
   }]
 enddef
 
