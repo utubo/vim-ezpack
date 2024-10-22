@@ -5,7 +5,7 @@ g:ezpack_home = expand($'{&pp->split(',')[0]}/pack/ezpack')
 var plugins = []
 
 def MkParent(path: string)
-  mkdir($'{path->substitute('/[^/]*$', '', '')}', 'p')
+  mkdir($'{path->substitute('[\/][^\/]*$', '', '')}', 'p')
 enddef
 
 def GitPull(): list<any>
