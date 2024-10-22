@@ -51,7 +51,7 @@ def GitPull(): list<any>
       # too many jobs kill vim on sakura rental server.
       chdir(cwd)
       ExitCb(0, 0)
-      OubCb(0, [system(gitcmd)])
+      OutCb(0, [system(gitcmd)])
       r.status = v:shell_error
     endif
   endfor
