@@ -32,12 +32,11 @@ def GitPull(): list<any>
       gitcmd = $'git clone --depth=1 {p.url}'
       cloned += [path]
     endif
-    var r = {
+    var r = add(results, {
       label: p.label,
       out: [],
       status: -1,
-    }
-    results += [r]
+    })[-1]
     const ExitCb = (job, status) => {
       ++job_count
       r.status = status
