@@ -64,8 +64,8 @@ EXAMPLS							*ezpack-examples*
 	export def ListPlugins()
 		ezpack#Init()
 		Ezpack utubo/vim-ezpack <opt>
-		Ezpack utubo/example_plugin_load_at_start
-		Ezpack utubo/example_plugin_for_csv Filetype csv
+		Ezpack example/plugin_load_at_start
+		Ezpack example/plugin_for_csv Filetype csv
 	enddef
 
 ==============================================================================
