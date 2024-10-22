@@ -65,8 +65,10 @@ EXAMPLS							*ezpack-examples*
 	export def ListPlugins()
 		ezpack#Init()
 		Ezpack utubo/vim-ezpack <opt>
-		Ezpack example/plugin_load_at_start
-		Ezpack example/plugin_for_csv Filetype csv
+		Ezpack example/installed_to_pack_start
+		Ezpack example/installed_to_pack_opt <opt>
+		Ezpack example/installed_to_opt_packadd_on_vimenter VimEnter *
+		Ezpack example/u_can_set_any_event Filetype csv ++once
 	enddef
 <
 
