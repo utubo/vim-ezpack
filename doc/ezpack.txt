@@ -61,9 +61,8 @@ EXAMPLS							*ezpack-examples*
 >
 	vim9script
 	packadd vim-ezpack
-	command! -nargs=* Ezpack ezpack#Ezpack(<f-args>)
 
-	ezpack#Init()
+	EzpackInit
 	Ezpack utubo/vim-ezpack <opt>
 	Ezpack example/install_to_start
 	Ezpack example/install_to_opt <opt>
