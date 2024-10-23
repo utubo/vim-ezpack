@@ -12,7 +12,7 @@ enddef
 
 def GitPull(): list<any>
   const l = plugins->len()
-  redraw
+  redraw!
   echo $'Ezpack: (0/{l}) wait for install.'
   var job_count = 0
   var cloned = []
@@ -40,7 +40,7 @@ def GitPull(): list<any>
     const ExitCb = (job, status) => {
       ++job_count
       r.status = status
-      redraw
+      redraw!
       echo $'Ezpack: ({job_count}/{l}) {gitcmd->split(' ')[1]} {p.label}'
     }
     const OutCb = (ch, msg) => add(r.out, msg)
@@ -68,7 +68,7 @@ def ExecuteCloned(cloned: list<string>)
   &rtp = $'{cloned->join(',')},{&rtp}'
   for c in cloned
     for f in globpath($'{c}/plugins', '*.vim')
-      execute 'source' f
+      silent !execute 'source' f
     endfor
   endfor
 enddef
@@ -114,14 +114,14 @@ export def Install()
   const cloned = GitPull()
   const autoCmdPath = CreateAutocmd()
   ExecuteCloned(cloned)
-  execute 'source' autoCmdPath
-  redraw
+  silent !execute 'source' autoCmdPath
+  redraw!
   echo 'Ezpack: COMPLETED.'
 enddef
 
 export def CleanUp()
   if !plugins
-    redraw
+    redraw!
     echom 'Ezpack: The list of plugins is empty.'
     return
   endif
@@ -145,7 +145,7 @@ export def CleanUp()
     endif
     delete(f, 'rf')
   endfor
-  redraw
+  redraw!
   echo 'Ezpack: COMPLETED.'
 enddef
 
