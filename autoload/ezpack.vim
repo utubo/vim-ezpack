@@ -68,7 +68,7 @@ def ExecuteCloned(cloned: list<string>)
   &rtp = $'{cloned->join(',')},{&rtp}'
   for c in cloned
     for f in globpath($'{c}/plugins', '*.vim')
-      silent !execute 'source' f
+      execute 'source' f
     endfor
   endfor
 enddef
@@ -114,9 +114,12 @@ export def Install()
   const cloned = GitPull()
   const autoCmdPath = CreateAutocmd()
   ExecuteCloned(cloned)
-  silent !execute 'source' autoCmdPath
+  execute 'source' autoCmdPath
   redraw!
   echo 'Ezpack: COMPLETED.'
+  if has('vim_starting')
+    feedkeys("\n")
+  endif
 enddef
 
 export def CleanUp()
