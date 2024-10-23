@@ -122,10 +122,10 @@ enddef
 export def CleanUp()
   if !plugins
     redraw
-    echom $'Ezpack: The list of plugins is empty.'
+    echom 'Ezpack: The list of plugins is empty.'
     return
   endif
-  var names = []
+  var names = ['_']
   for p in plugins
     add(names, p.name)
   endfor
@@ -137,7 +137,7 @@ export def CleanUp()
     if index(names, name) !=# -1
       continue
     endif
-    if !isdirectory($'{f}/plugins') && !isdirectory($'{f}/autoload')
+    if !isdirectory($'{f}/plugin') && !isdirectory($'{f}/autoload')
       continue
     endif
     if input($'rm {f} (y/n): ') != 'y'
