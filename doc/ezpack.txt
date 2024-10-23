@@ -22,14 +22,14 @@ License : MIT license  {{{
 }}}
 
 ==============================================================================
-CONTENTS					*ezpack-contents*
+CONTENTS						*ezpack-contents*
 
-INTRODUCTION					|ezpack-introduction|
-USAGE						|ezpack-usage|
-  EXAMPLES					|ezpack-examples|
+INTRODUCTION						|ezpack-introduction|
+USAGE							|ezpack-usage|
+  EXAMPLES						|ezpack-examples|
 
 ==============================================================================
-INTRODUCTION					*ezpack-introduction*
+INTRODUCTION						*ezpack-introduction*
 
 *ezpack* is a simple vim plugin manager.
 [!]This is customized for my use, so this is not recommended.
@@ -39,13 +39,13 @@ Latest version:
 https://github.com/utubo/vim-ezpack.vim
 
 ==============================================================================
-USAGE						*ezpack-usage*
+USAGE							*ezpack-usage*
 
 Requirements
 	Vim 9.1 or later
 
 ------------------------------------------------------------------------------
-EXAMPLS							*ezpack-examples*
+EXAMPLES						*ezpack-examples*
 
 .vimrc
 >
