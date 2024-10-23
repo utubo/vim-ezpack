@@ -119,3 +119,33 @@ export def Install()
   echo 'Ezpack: COMPLETED.'
 enddef
 
+export def CleanUp()
+  if !plugins
+    redraw
+    echom $'Ezpack: The list of plugins is empty.'
+    return
+  endif
+  var names = []
+  for p in plugins
+    add(names, p.name)
+  endfor
+  const dirs =
+    globpath($'{g:ezpack_home}/start', '*')->split("\n") +
+    globpath($'{g:ezpack_home}/opt', '*')->split("\n")
+  for f in dirs
+    const name = matchstr(f, '[^\/]\+$')
+    if index(names, name) !=# -1
+      continue
+    endif
+    if !isdirectory($'{f}/plugins') && !isdirectory($'{f}/autoload')
+      continue
+    endif
+    if input($'rm {f} (y/n): ') != 'y'
+      continue
+    endif
+    delete(f, 'rf')
+  endfor
+  redraw
+  echo 'Ezpack: COMPLETED.'
+enddef
+
