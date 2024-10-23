@@ -1,6 +1,6 @@
 vim9script
 
-g:ezpack_home = expand($'{&pp->split(',')[0]}/pack/ezpack')
+g:ezpack_home = get(g:, 'ezpack_home', expand($'{&pp->split(',')[0]}/pack/ezpack'))
 
 var plugins = []
 
