@@ -130,7 +130,7 @@ export def Install()
   redraw
   if !!errors
     echoh ErrorMsg
-    echom 'Ezpack: FAILED! see EzpackLog.'
+    echom 'Ezpack: FAILED! See :EzpackLog.'
   elseif !!updated
     echoh WarningMsg
     echom 'Ezpack: Some pulgins are updated, plz restart vim.'
