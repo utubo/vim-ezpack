@@ -2,7 +2,8 @@ vim9script
 
 g:ezpack_home = get(g:, 'ezpack_home', expand($'{&pp->split(',')[0]}/pack/ezpack'))
 
-var plugins = []
+var plugins: list<any> = []
+var results: list<any> = []
 
 def MkParent(path: string): string
   const p = $'{path->substitute('[\/][^\/]*$', '', '')}'
@@ -15,8 +16,7 @@ def GitPull(): list<any>
   redraw
   echo $'Ezpack: (0/{l}) wait for install.'
   var job_count = 0
-  var cloned = []
-  var results = []
+  results = []
   const current = getcwd()
   for p in plugins
     const s = p.opt || !!p.trigger ? ['opt', 'start'] : ['start', 'opt']
@@ -25,31 +25,30 @@ def GitPull(): list<any>
     if isdirectory(extra) && !isdirectory(path)
       rename(extra, path)
     endif
-    var cwd = path
-    var gitcmd = $'git pull'
-    if !isdirectory(path)
-      cwd = MkParent(path)
-      gitcmd = $'git clone --depth=1 {p.url}'
-      cloned += [path]
-    endif
     var r = add(results, {
       label: p.label,
       out: [],
       status: -1,
+      cwd: path,
+      gitcmd: 'git pull',
     })[-1]
+    if !isdirectory(path)
+      r.cwd = MkParent(path)
+      r.gitcmd = $'git clone --depth=1 {p.url}'
+    endif
     const ExitCb = (job, status) => {
       ++job_count
       r.status = status
       redraw
-      echo $'Ezpack: ({job_count}/{l}) {gitcmd->split(' ')[1]} {r.label}'
+      echo $'Ezpack: ({job_count}/{l}) {r.gitcmd->split(' ')[1]} {r.label}'
     }
     const OutCb = (ch, msg) => add(r.out, msg)
     if has('win32')
-      job_start(gitcmd, { cwd: cwd, exit_cb: ExitCb, out_cb: OutCb, err_cb: OutCb })
+      job_start(r.gitcmd, { cwd: r.cwd, exit_cb: ExitCb, out_cb: OutCb, err_cb: OutCb })
     else
       # too many jobs kill vim on sakura rental server.
-      chdir(cwd)
-      OutCb(0, [system(gitcmd)])
+      chdir(r.cwd)
+      OutCb(0, [system(r.gitcmd)])
       ExitCb(0, v:shell_error)
     endif
   endfor
@@ -57,10 +56,20 @@ def GitPull(): list<any>
   while job_count < l
     sleep 50m
   endwhile
-  for r in results->filter((i, r) => r.status !=# 0 && r.status !=# 128)
-    echoe [r.label, r.out]->flattennew()->join(' ') # NOTE: echoe does not linebreak
+  var updated = []
+  var cloned = []
+  for r in results
+    if r.status !=# 0 && r.status !=# 128
+      echoe [r.label, r.out]->flattennew()->join(' ') # NOTE: echoe does not linebreak
+    elseif r.gitcmd ==# 'git pull'
+      if r.out[0]->flattennew()[0]->trim() !=# 'Already up to date.'
+        updated += [r.path]
+      endif
+    else
+      cloned += [r.path]
+    endif
   endfor
-  return cloned
+  return [updated, cloned]
 enddef
 
 # TODO: Is this unnecessary?
@@ -111,12 +120,18 @@ export def Install()
   if exists('#User#EzpackInstallPre')
     doautocmd User EzpackInstallPre
   endif
-  const cloned = GitPull()
+  const [updated, cloned] = GitPull()
   const autoCmdPath = CreateAutocmd()
   ExecuteCloned(cloned)
   execute 'source' autoCmdPath
   redraw
-  echo 'Ezpack: COMPLETED.'
+  if !updated
+    echo 'Ezpack: COMPLETED.'
+  else
+    echoh WarningMsg
+    echo 'Ezpack: Some pulgins are updated, plz restart vim.'
+    echoh Normal
+  endif
   if has('vim_starting')
     feedkeys("\n")
   endif
@@ -152,3 +167,17 @@ export def CleanUp()
   echo 'Ezpack: COMPLETED.'
 enddef
 
+export def Log()
+  for r in results
+    echo r.label
+    if r.status !=# 0 && r.status !=# 128
+      echoh ErrorMsg
+    else
+      echoh MoreMsg
+    endif
+    echo r.gitcmd
+    echo r.out->flattennew()->join("\n")
+    echoh Normal
+  endfor
+  echo 'EOL'
+enddef
