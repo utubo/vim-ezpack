@@ -91,7 +91,7 @@ def CreateAutocmd(): string
     if !p.trigger
       continue
     endif
-    lines += [$"au ezpack {p.trigger} packadd {p.name}"]
+    lines += [$"au {p.trigger} ++once packadd {p.name}"]
   endfor
   lines += ['augroup END']
   const path = expand($'{g:ezpack_home}/start/_/plugin/_.vim')
@@ -108,13 +108,13 @@ export def Init()
 enddef
 
 export def Ezpack(...fargs: list<any>)
-  const opt = get(fargs, 1, '') ==# '<opt>'
-  const trigger = fargs[(opt ? 2 : 1) : ]->join(' ')
+  const flg = get(fargs, 1, '')
+  const trigger = fargs[(flg[0] ==# '<' ? 2 : 1) : ]->join(' ')
   plugins += [{
     label: fargs[0],
     name: fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', ''),
     url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
-    opt: opt,
+    opt: flg ==# '<opt>',
     trigger: trigger,
   }]
 enddef
