@@ -31,6 +31,7 @@ def GitPull(): list<any>
       status: -1,
       cwd: path,
       gitcmd: 'git pull',
+      path: path,
     })[-1]
     if !isdirectory(path)
       r.cwd = MkParent(path)
@@ -38,11 +39,11 @@ def GitPull(): list<any>
     endif
     const ExitCb = (job, status) => {
       ++job_count
-      r.status = status
+      r.status = isdirectory(path) ? status : -1
       redraw
       echo $'Ezpack: ({job_count}/{l}) {r.gitcmd->split(' ')[1]} {r.label}'
     }
-    const OutCb = (ch, msg) => add(r.out, msg)
+    const OutCb = (ch, msg) => add(r.out, [msg])
     if has('win32')
       job_start(r.gitcmd, { cwd: r.cwd, exit_cb: ExitCb, out_cb: OutCb, err_cb: OutCb })
     else
@@ -58,18 +59,20 @@ def GitPull(): list<any>
   endwhile
   var updated = []
   var cloned = []
+  var errors = []
   for r in results
+    r.out = r.out->flattennew()
     if r.status !=# 0 && r.status !=# 128
-      echoe [r.label, r.out]->flattennew()->join(' ') # NOTE: echoe does not linebreak
+      errors += [r.path]
     elseif r.gitcmd ==# 'git pull'
-      if r.out[0]->flattennew()[0]->trim() !=# 'Already up to date.'
+      if r.out[0]->trim() !=# 'Already up to date.'
         updated += [r.path]
       endif
     else
       cloned += [r.path]
     endif
   endfor
-  return [updated, cloned]
+  return [updated, cloned, errors]
 enddef
 
 # TODO: Is this unnecessary?
@@ -120,16 +123,18 @@ export def Install()
   if exists('#User#EzpackInstallPre')
     doautocmd User EzpackInstallPre
   endif
-  const [updated, cloned] = GitPull()
+  const [updated, cloned, errors] = GitPull()
   const autoCmdPath = CreateAutocmd()
   ExecuteCloned(cloned)
   execute 'source' autoCmdPath
   redraw
-  if !updated
+  if !!errors
+    echoe 'Ezpack: FAILED! see EzpackLog.'
+  elseif !updated
     echo 'Ezpack: COMPLETED.'
   else
     echoh WarningMsg
-    echo 'Ezpack: Some pulgins are updated, plz restart vim.'
+    echom 'Ezpack: Some pulgins are updated, plz restart vim.'
     echoh Normal
   endif
   if has('vim_starting')
@@ -176,7 +181,7 @@ export def Log()
       echoh MoreMsg
     endif
     echo r.gitcmd
-    echo r.out->flattennew()->join("\n")
+    echo r.out->join("\n")
     echoh Normal
   endfor
   echo 'EOL'
