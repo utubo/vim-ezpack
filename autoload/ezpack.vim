@@ -129,14 +129,15 @@ export def Install()
   execute 'source' autoCmdPath
   redraw
   if !!errors
-    echoe 'Ezpack: FAILED! see EzpackLog.'
-  elseif !updated
-    echo 'Ezpack: COMPLETED.'
-  else
+    echoh ErrorMsg
+    echom 'Ezpack: FAILED! see EzpackLog.'
+  elseif !!updated
     echoh WarningMsg
     echom 'Ezpack: Some pulgins are updated, plz restart vim.'
-    echoh Normal
+  else
+    echo 'Ezpack: COMPLETED.'
   endif
+  echoh Normal
   if has('vim_starting')
     feedkeys("\n")
   endif
