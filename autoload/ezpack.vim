@@ -182,7 +182,7 @@ export def CleanUp()
     echom 'Ezpack: The list of plugins is empty.'
     return
   endif
-  var paths = [$'{g:ezpack_home}/start/_']
+  var paths = [expand($'{g:ezpack_home}/start/_')]
   for p in plugins
     add(paths, expand(p.path))
   endfor
