@@ -19,27 +19,24 @@ def GitPull(): list<any>
   results = []
   const current = getcwd()
   for p in plugins
-    const s = !p.flg ? ['start', 'opt'] : ['opt', 'start']
-    const path = expand($'{g:ezpack_home}/{s[0]}/{p.name}')
-    const extra = expand($'{g:ezpack_home}/{s[1]}/{p.name}')
-    if isdirectory(extra) && !isdirectory(path)
-      rename(extra, path)
+    if isdirectory(p.extra) && !isdirectory(p.path)
+      rename(extra, p.path)
     endif
     var r = add(results, {
       label: p.label,
-      out: [],
-      status: -1,
-      cwd: path,
+      path: p.path,
+      cwd: p.path,
       gitcmd: 'git pull',
-      path: path,
+      status: -1,
+      out: [],
     })[-1]
-    if !isdirectory(path)
-      r.cwd = MkParent(path)
+    if !isdirectory(p.path)
+      r.cwd = MkParent(p.path)
       r.gitcmd = $'git clone --depth=1 {p.url}'
     endif
     const ExitCb = (job, status) => {
       ++job_count
-      r.status = isdirectory(path) ? status : -1
+      r.status = isdirectory(r.path) ? status : -1
       redraw
       echo $'Ezpack: ({job_count}/{l}) {r.gitcmd->split(' ')[1]} {r.label}'
     }
@@ -131,14 +128,20 @@ export def Init()
 enddef
 
 export def Ezpack(...fargs: list<any>)
+  const name = fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', '')
   const flg = get(fargs, 1, '')
   const args = !flg ? '' : fargs[2 :]->join(' ')
+  const s = !flg ? ['start', 'opt'] : ['opt', 'start']
+  const path = expand($'{g:ezpack_home}/{s[0]}/{name}')
+  const extra = expand($'{g:ezpack_home}/{s[1]}/{name}')
   plugins += [{
     label: fargs[0],
-    name: fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', ''),
     url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
+    name: name,
     flg: flg,
     args: args,
+    path: path,
+    extra: extra,
   }]
 enddef
 
@@ -172,25 +175,24 @@ export def CleanUp()
     echom 'Ezpack: The list of plugins is empty.'
     return
   endif
-  var names = ['_']
+  var paths = [$'{g:ezpack_home}/start/_']
   for p in plugins
-    add(names, p.name)
+    add(paths, expand(p.path))
   endfor
   const dirs =
     globpath($'{g:ezpack_home}/start', '*')->split("\n") +
     globpath($'{g:ezpack_home}/opt', '*')->split("\n")
-  for f in dirs
-    const name = matchstr(f, '[^\/]\+$')
-    if index(names, name) !=# -1
+  for d in dirs
+    if index(paths, d) !=# -1
       continue
     endif
-    if !isdirectory($'{f}/plugin') && !isdirectory($'{f}/autoload')
+    if !isdirectory($'{d}/plugin') && !isdirectory($'{d}/autoload')
       continue
     endif
-    if input($'rm {f} (y/n): ') != 'y'
+    if input($'rm {d} (y/n): ') != 'y'
       continue
     endif
-    delete(f, 'rf')
+    delete(d, 'rf')
   endfor
   redraw
   echo 'Ezpack: COMPLETED.'
