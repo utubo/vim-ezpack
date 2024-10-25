@@ -127,7 +127,14 @@ export def Init()
   plugins = []
 enddef
 
-export def Ezpack(...fargs: list<any>)
+export def Ezpack(...fargs_src: list<any>)
+  var fargs = []
+  for a in fargs_src
+    if typename(a) ==# 'string' && a[0] ==# '#'
+      break
+    endif
+    fargs += [a]
+  endfor
   const name = fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', '')
   const flg = get(fargs, 1, '')
   const args = !flg ? '' : fargs[2 :]->join(' ')
