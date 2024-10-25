@@ -6,7 +6,7 @@ var plugins: list<any> = []
 var results: list<any> = []
 
 def MkParent(path: string): string
-  const p = $'{path->substitute('[\/][^\/]*$', '', '')}'
+  const p = path->substitute('[\/][^\/]*$', '', '')
   mkdir(p, 'p')
   return p
 enddef
@@ -92,7 +92,7 @@ def CreateAutocmd(): string
     if p.flg ==# '<lazy>'
       lazys += [p.name]
     elseif p.flg ==# '<on>'
-      lines += [$'au {p.trigger} ++once packadd {p.name}']
+      lines += [$'au {p.args} ++once packadd {p.name}']
     endif
   endfor
   if !!lazys
@@ -132,13 +132,13 @@ enddef
 
 export def Ezpack(...fargs: list<any>)
   const flg = get(fargs, 1, '')
-  const trigger = fargs[(flg[0] ==# '<' ? 2 : 1) : ]->join(' ')
+  const args = !flg ? '' : fargs[2 :]->join(' ')
   plugins += [{
     label: fargs[0],
     name: fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', ''),
     url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
     flg: flg,
-    trigger: trigger,
+    args: args,
   }]
 enddef
 
