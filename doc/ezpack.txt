@@ -68,7 +68,7 @@ EXAMPLES						*ezpack-examples*
 	Ezpack utubo/vim-ezpack <opt>
 	Ezpack example/install_to_start
 	Ezpack example/install_to_opt <opt>
-	Ezpack example/install_to_opt_packadd_on_vimenter <on> VimEnter *
+	Ezpack example/lazy_load <lazy>
 	Ezpack example/u_can_set_any_event <on> Filetype csv
 
 	export def Install()

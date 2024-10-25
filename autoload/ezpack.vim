@@ -19,7 +19,7 @@ def GitPull(): list<any>
   results = []
   const current = getcwd()
   for p in plugins
-    const s = p.opt || !!p.trigger ? ['opt', 'start'] : ['start', 'opt']
+    const s = !p.flg ? ['start', 'opt'] : ['opt', 'start']
     const path = expand($'{g:ezpack_home}/{s[0]}/{p.name}')
     const extra = expand($'{g:ezpack_home}/{s[1]}/{p.name}')
     if isdirectory(extra) && !isdirectory(path)
@@ -86,14 +86,37 @@ def ExecuteCloned(cloned: list<string>)
 enddef
 
 def CreateAutocmd(): string
+  var lazys = []
   var lines = ['vim9script', 'augroup ezpack', 'au!']
   for p in plugins
-    if !p.trigger
-      continue
+    if p.flg ==# '<lazy>'
+      lazys += [p.name]
+    elseif p.flg ==# '<on>'
+      lines += [$'au {p.trigger} ++once packadd {p.name}']
     endif
-    lines += [$"au {p.trigger} ++once packadd {p.name}"]
   endfor
+  if !!lazys
+    lines += ['au SafeStateAgain * ++once LazyLoad(0)']
+  endif
   lines += ['augroup END']
+  if !!lazys
+    lines += ['const plugins = [']
+    for name in lazys
+      lines += [$"  '{name}',"]
+    endfor
+    lines += [
+      ']',
+      'var index = len(plugins)',
+      "const interval = get(g:, 'ezpack_lazy_interval', 5)",
+      'def LazyLoad(t: number)',
+      '  --index',
+      "  execute 'packadd' plugins[index]",
+      '  if !!index',
+      '    timer_start(interval, LazyLoad)',
+      '  endif',
+      'enddef'
+    ]
+  endif
   const path = expand($'{g:ezpack_home}/start/_/plugin/_.vim')
   MkParent(path)
   writefile(lines, path)
@@ -114,7 +137,7 @@ export def Ezpack(...fargs: list<any>)
     label: fargs[0],
     name: fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', ''),
     url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
-    opt: flg ==# '<opt>',
+    flg: flg,
     trigger: trigger,
   }]
 enddef
@@ -181,6 +204,8 @@ export def Log()
     else
       echoh MoreMsg
     endif
+    echo $'path: {r.path}'
+    echo $'cd {r.cwd}'
     echo r.gitcmd
     echo r.out->join("\n")
     echoh Normal
