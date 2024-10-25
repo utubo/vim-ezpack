@@ -20,7 +20,7 @@ def GitPull(): list<any>
   const current = getcwd()
   for p in plugins
     if isdirectory(p.extra) && !isdirectory(p.path)
-      rename(extra, p.path)
+      rename(p.extra, p.path)
     endif
     var r = add(results, {
       label: p.label,
