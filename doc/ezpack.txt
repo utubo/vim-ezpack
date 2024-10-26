@@ -69,7 +69,7 @@ EXAMPLES						*ezpack-examples*
 	Ezpack example/install_to_start
 	Ezpack example/install_to_opt <opt>
 	Ezpack example/lazy_load <lazy>
-	Ezpack example/tempolaly_disabled <disabled>
+	Ezpack example/temporary_disabled <disabled>
 	Ezpack example/u_can_set_any_event <on> Filetype csv
 	Ezpack example/comment #comment
 
