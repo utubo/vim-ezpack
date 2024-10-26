@@ -31,8 +31,10 @@ def GitPull(): list<any>
     if p.flg ==# '<disabled>'
       ++job_count
       if isdirectory(p.path)
+        redraw
         echo $'Ezpack: ({job_count}/{l}) disabled {r.label}'
-        rename(p.path, p.dis)
+        r.gitcmd = 'mv {p.path} {p.dis}'
+        r.status = rename(p.path, p.dis)
       endif
       continue
     elseif isdirectory(p.extra) && !isdirectory(p.path)
