@@ -28,13 +28,17 @@ def GitPull(): list<any>
       out: [],
       isnew: false,
     })[-1]
-    if p.flg ==# '<disabled>'
+    if p.flg ==# '<disable>'
       ++job_count
+      r.cwd = MkParent(p.dis)
+      r.gitcmd = $'mv {p.path} {p.dis}'
+      r.out = ['']
       if isdirectory(p.path)
         redraw
-        echo $'Ezpack: ({job_count}/{l}) disabled {r.label}'
-        r.gitcmd = 'mv {p.path} {p.dis}'
+        echo $'Ezpack: ({job_count}/{l}) disable {r.label}'
         r.status = rename(p.path, p.dis)
+      else
+        r.status = 0
       endif
       continue
     elseif isdirectory(p.extra) && !isdirectory(p.path)
@@ -153,7 +157,7 @@ export def Ezpack(...fargs_src: list<any>)
   const s = !flg ? ['start', 'opt'] : ['opt', 'start']
   const path = expand($'{g:ezpack_home}/{s[0]}/{name}')
   const extra = expand($'{g:ezpack_home}/{s[1]}/{name}')
-  const dis = expand($'{g:ezpack_home}/disabled/{name}')
+  const dis = expand($'{g:ezpack_home}/disable/{name}')
   plugins += [{
     label: fargs[0],
     url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
