@@ -69,6 +69,7 @@ EXAMPLES						*ezpack-examples*
 	Ezpack example/install_to_start
 	Ezpack example/install_to_opt <opt>
 	Ezpack example/lazy_load <lazy>
+	Ezpack example/tempolaly_disabled <disabled>
 	Ezpack example/u_can_set_any_event <on> Filetype csv
 	Ezpack example/comment #comment
 
@@ -81,6 +82,7 @@ EXAMPLES						*ezpack-examples*
 <
 - Plugins are installed to `~/.vim/pack/ezpack/start` or `~/.vim/pack/ezpack/opt`.
 - Autocmds for packadd are `~/.vim/pack/ezpack/start/_/plugins/_.vim`
+- Disabelds are moved to   `~/.vim/pack/ezpack/disabled`.
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:

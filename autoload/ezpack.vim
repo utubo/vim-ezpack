@@ -19,9 +19,6 @@ def GitPull(): list<any>
   results = []
   const current = getcwd()
   for p in plugins
-    if isdirectory(p.extra) && !isdirectory(p.path)
-      rename(p.extra, p.path)
-    endif
     var r = add(results, {
       label: p.label,
       path: p.path,
@@ -29,8 +26,23 @@ def GitPull(): list<any>
       gitcmd: 'git pull',
       status: -1,
       out: [],
+      isnew: false,
     })[-1]
+    if p.flg ==# '<disabled>'
+      ++job_count
+      if isdirectory(p.path)
+        echo $'Ezpack: ({job_count}/{l}) disabled {r.label}'
+        rename(p.path, p.dis)
+      endif
+      continue
+    elseif isdirectory(p.extra) && !isdirectory(p.path)
+      rename(p.extra, p.path)
+    elseif isdirectory(p.dis) && !isdirectory(p.path)
+      rename(p.dis, p.path)
+      r.isnew = true
+    endif
     if !isdirectory(p.path)
+      r.isnew = true
       r.cwd = MkParent(p.path)
       r.gitcmd = $'git clone --depth=1 {p.url}'
     endif
@@ -61,12 +73,10 @@ def GitPull(): list<any>
     r.out = r.out->flattennew()
     if r.status !=# 0 && r.status !=# 128
       errors += [r.path]
-    elseif r.gitcmd ==# 'git pull'
-      if r.out[0]->trim() !=# 'Already up to date.'
-        updated += [r.path]
-      endif
-    else
+    elseif r.isnew
       cloned += [r.path]
+    elseif r.out[0]->trim() !=# 'Already up to date.'
+      updated += [r.path]
     endif
   endfor
   return [updated, cloned, errors]
@@ -141,6 +151,7 @@ export def Ezpack(...fargs_src: list<any>)
   const s = !flg ? ['start', 'opt'] : ['opt', 'start']
   const path = expand($'{g:ezpack_home}/{s[0]}/{name}')
   const extra = expand($'{g:ezpack_home}/{s[1]}/{name}')
+  const dis = expand($'{g:ezpack_home}/disabled/{name}')
   plugins += [{
     label: fargs[0],
     url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
@@ -149,6 +160,7 @@ export def Ezpack(...fargs_src: list<any>)
     args: args,
     path: path,
     extra: extra,
+    dis: dis,
   }]
 enddef
 
