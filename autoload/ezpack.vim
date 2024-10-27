@@ -6,7 +6,7 @@ var plugins: list<any> = []
 var results: list<any> = []
 
 def MkParent(path: string): string
-  const p = path->substitute('[\/][^\/]*$', '', '')
+  const p = path->fnamemodify(':p:h')
   mkdir(p, 'p')
   return p
 enddef
