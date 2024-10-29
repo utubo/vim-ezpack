@@ -119,12 +119,13 @@ def CreateAutocmd(): string
     endfor
     lines += [
       ']',
-      'var index = len(plugins)',
+      'var index = 0',
+      'const max = len(plugins)',
       "const interval = get(g:, 'ezpack_lazy_interval', 5)",
       'def LazyLoad(t: number)',
-      '  --index',
-      "  execute 'packadd' plugins[index]",
-      '  if !!index',
+      '  if index < max',
+      "    execute 'packadd' plugins[index]",
+      '    ++index',
       '    timer_start(interval, LazyLoad)',
       '  endif',
       'enddef'
