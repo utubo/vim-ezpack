@@ -106,16 +106,16 @@ enddef
 
 def CreateAutocmd(): string
   var lazys = []
-  var lines = ['vim9script', 'augroup ezpack', 'au!']
+  var lines = ['vim9script', 'augroup ezpack', '  au!']
   for p in plugins
     if p.flg ==# '<lazy>'
       lazys += [p.name]
     elseif p.flg ==# '<on>'
-      lines += [$'au {p.args} ++once packadd {p.name}']
+      lines += [$'  au {p.args} ++once packadd {p.name}']
     endif
   endfor
   if !!lazys
-    lines += ['au SafeStateAgain * ++once LazyLoad(0)']
+    lines += ['  au SafeStateAgain * ++once LazyLoad(0)']
   endif
   lines += ['augroup END']
   if !!lazys
