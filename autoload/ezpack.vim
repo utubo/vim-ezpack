@@ -27,6 +27,9 @@ def GitPull(): list<any>
       status: -1,
       out: [],
       isnew: false,
+      updated: false,
+      cloned: false,
+      errored: false,
     })[-1]
     if p.flg ==# '<disable>'
       ++job_count
@@ -78,10 +81,13 @@ def GitPull(): list<any>
   for r in results
     r.out = r.out->flattennew()
     if r.status !=# 0 && r.status !=# 128
+      r.errored = true
       errors += [r.path]
     elseif r.isnew
+      r.cloned = true
       cloned += [r.path]
     elseif r.out[0]->trim() !=# 'Already up to date.'
+      r.updated = true
       updated += [r.path]
     endif
   endfor
@@ -227,8 +233,10 @@ enddef
 export def Log()
   for r in results
     echo r.label
-    if r.status !=# 0 && r.status !=# 128
+    if r.errored
       echoh ErrorMsg
+    elseif r.cloned || r.updated
+      echoh WarningMsg
     else
       echoh MoreMsg
     endif
