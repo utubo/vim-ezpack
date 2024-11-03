@@ -31,7 +31,7 @@ def GitPull(): list<any>
       cloned: false,
       errored: false,
     })[-1]
-    if p.flg ==# '<disable>'
+    if p.disable
       ++job_count
       r.cwd = MkParent(p.dis)
       r.gitcmd = $'mv {p.path} {p.dis}'
@@ -106,13 +106,22 @@ enddef
 
 def CreateAutocmd(): string
   var lazys = []
+  var cmds = []
+  var maps = []
   var lines = ['vim9script', 'augroup ezpack', '  au!']
   for p in plugins
-    if p.flg ==# '<lazy>'
+    if p.lazy
       lazys += [p.name]
-    elseif p.flg ==# '<on>'
-      lines += [$'  au {p.args} ++once packadd {p.name}']
     endif
+    for o in p.on
+      lines += [$'  au {o} ++once packadd {p.name}']
+    endfor
+    for c in p.cmd
+      cmds += [$'command! -nargs=* {c} packadd {p.name}|{c} <args>']
+    endfor
+    for m in p.map
+      maps += [$'{m.map} {m.key} <Cmd>packadd {p.name}<CR>{m.key}']
+    endfor
   endfor
   if !!lazys
     lines += ['  au SafeStateAgain * ++once LazyLoad(0)']
@@ -137,6 +146,8 @@ def CreateAutocmd(): string
       'enddef'
     ]
   endif
+  lines += cmds
+  lines += maps
   const path = expand($'{g:ezpack_home}/start/_/plugin/_.vim')
   MkParent(path)
   writefile(lines, path)
@@ -174,22 +185,47 @@ export def Ezpack(...fargs_src: list<any>)
     fargs += [a]
   endfor
   const name = fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', '')
-  const flg = get(fargs, 1, '')
-  const args = !flg ? '' : fargs[2 :]->join(' ')
-  const s = !flg ? ['start', 'opt'] : ['opt', 'start']
+  const s = !get(fargs, 1, '') ? ['start', 'opt'] : ['opt', 'start']
   const path = expand($'{g:ezpack_home}/{s[0]}/{name}')
   const extra = expand($'{g:ezpack_home}/{s[1]}/{name}')
   const dis = expand($'{g:ezpack_home}/disable/{name}')
-  plugins += [{
+  var p = add(plugins, {
     label: fargs[0],
     url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
     name: name,
-    flg: flg,
-    args: args,
+    # Paths
     path: path,
     extra: extra,
     dis: dis,
-  }]
+    # Options
+    lazy: false,
+    disable: false,
+    on: [],
+    cmd: [],
+    map: [],
+  })[-1]
+  var i = 0
+  while true
+    ++i
+    const a = get(fargs, i, '')
+    if !a
+      break
+    endif
+    if a ==# '<lazy>'
+      p.lazy = true
+    elseif a ==# '<disable>'
+      p.disable = true
+    elseif a ==# '<on>'
+      add(p.on, fargs[i + 1 : i + 2]->join(' '))
+      i += 2
+    elseif a ==# '<cmd>'
+      ++i
+      add(p.cmd, fargs[i])
+    elseif a =~# '<[nixovct]\?map>'
+      ++i
+      add(p.map, { map: a->substitute('[<>]', '', 'g'), key: fargs[i] })
+    endif
+  endwhile
 enddef
 
 export def Install()
