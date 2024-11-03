@@ -186,6 +186,9 @@ export def Install()
   ExecuteCloned(cloned)
   execute 'source' autoCmdPath
   redraw
+  if !has('vim_starting')
+    Log()
+  endif
   if !!errors
     echoh ErrorMsg
     echom 'Ezpack: FAILED! See :EzpackLog.'
