@@ -143,6 +143,21 @@ def CreateAutocmd(): string
   return path
 enddef
 
+def SimpleLog()
+  for r in results
+    if r.errored
+      echoh ErrorMsg
+      echom $'error {r.name}'
+    elseif r.updated
+      echoh WarningMsg
+      echom $'updated {r.name}'
+    elseif r.cloned
+      echoh WarningMsg
+      echom $'cloned {r.name}'
+    endif
+  endfor
+enddef
+
 # -----------------------
 # Interface
 
@@ -187,7 +202,7 @@ export def Install()
   execute 'source' autoCmdPath
   redraw
   if !has('vim_starting')
-    Log()
+    SimpleLog()
   endif
   if !!errors
     echoh ErrorMsg
