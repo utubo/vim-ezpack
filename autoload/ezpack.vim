@@ -158,13 +158,13 @@ def SimpleLog()
   for r in results
     if r.errored
       echoh ErrorMsg
-      echom $'error {r.name}'
+      echom $'error {r.label}'
     elseif r.updated
       echoh WarningMsg
-      echom $'updated {r.name}'
+      echom $'updated {r.label}'
     elseif r.cloned
       echoh WarningMsg
-      echom $'cloned {r.name}'
+      echom $'cloned {r.label}'
     endif
   endfor
 enddef
