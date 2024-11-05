@@ -155,17 +155,22 @@ def CreateAutocmd(): string
 enddef
 
 def SimpleLog()
-  echoh Normal
-  echow $'Ezpack:'
+  var logs = []
   for r in results
     if r.errored
-      echow $'- Error {r.label}'
+      add(log, $'- Error {r.label}')
     elseif r.updated
-      echow $'- Updated {r.label}'
+      add(log, $'- Updated {r.label}')
     elseif r.cloned
-      echow $'- Cloned {r.label}'
+      add(log, $'- Cloned {r.label}')
     endif
   endfor
+  if !!lines
+    echow $'Ezpack:'
+    for l in logs
+      echow l
+    endfor
+  endif
 enddef
 
 # -----------------------
