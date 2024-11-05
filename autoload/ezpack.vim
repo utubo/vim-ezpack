@@ -165,7 +165,7 @@ def SimpleLog()
       add(logs, $'- Cloned {r.label}')
     endif
   endfor
-  if !!lines
+  if !!logs
     echow $'Ezpack:'
     for l in logs
       echow l
