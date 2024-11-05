@@ -158,11 +158,11 @@ def SimpleLog()
   var logs = []
   for r in results
     if r.errored
-      add(log, $'- Error {r.label}')
+      add(logs, $'- Error {r.label}')
     elseif r.updated
-      add(log, $'- Updated {r.label}')
+      add(logs, $'- Updated {r.label}')
     elseif r.cloned
-      add(log, $'- Cloned {r.label}')
+      add(logs, $'- Cloned {r.label}')
     endif
   endfor
   if !!lines
