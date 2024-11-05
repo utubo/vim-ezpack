@@ -26,6 +26,7 @@ def GitPull(): list<any>
       gitcmd: 'git pull',
       status: -1,
       out: [],
+      start: p.start,
       isnew: false,
       updated: false,
       cloned: false,
@@ -94,12 +95,11 @@ def GitPull(): list<any>
   return [updated, cloned, errors]
 enddef
 
-# TODO: Is this unnecessary?
-def ExecuteCloned(cloned: list<string>)
-  &rtp = $'{cloned->join(',')},{&rtp}'
-  for c in cloned
-    if c =~# '[\/]start[\/]'
-      for f in globpath($'{c}/plugins', '*.vim')
+def ExecuteClonedStartPlugins()
+  for r in results
+    if r.isnew && r.start
+      &rtp = $'{r.path},{&rtp}'
+      for f in globpath($'{r.path}/plugins', '*.vim')
         execute 'source' f
       endfor
     endif
@@ -191,7 +191,8 @@ export def Ezpack(...fargs_src: list<any>)
     fargs += [a]
   endfor
   const name = fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', '')
-  const s = !get(fargs, 1, '') ? ['start', 'opt'] : ['opt', 'start']
+  const st = !get(fargs, 1, '')
+  const s = st ? ['start', 'opt'] : ['opt', 'start']
   const path = expand($'{g:ezpack_home}/{s[0]}/{name}')
   const extra = expand($'{g:ezpack_home}/{s[1]}/{name}')
   const dis = expand($'{g:ezpack_home}/disable/{name}')
@@ -204,6 +205,7 @@ export def Ezpack(...fargs_src: list<any>)
     extra: extra,
     dis: dis,
     # Options
+    start: st,
     lazy: false,
     disable: false,
     on: [],
@@ -240,7 +242,7 @@ export def Install()
   endif
   const [updated, cloned, errors] = GitPull()
   const autoCmdPath = CreateAutocmd()
-  ExecuteCloned(cloned)
+  ExecuteClonedStartPlugins()
   execute 'source' autoCmdPath
   redraw
   if !has('vim_starting')
