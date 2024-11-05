@@ -98,9 +98,11 @@ enddef
 def ExecuteCloned(cloned: list<string>)
   &rtp = $'{cloned->join(',')},{&rtp}'
   for c in cloned
-    for f in globpath($'{c}/plugins', '*.vim')
-      execute 'source' f
-    endfor
+    if c =~# '/start/'
+      for f in globpath($'{c}/plugins', '*.vim')
+        execute 'source' f
+      endfor
+    endif
   endfor
 enddef
 
