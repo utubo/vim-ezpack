@@ -155,16 +155,15 @@ def CreateAutocmd(): string
 enddef
 
 def SimpleLog()
+  echoh Normal
+  echow $'Ezpack:'
   for r in results
     if r.errored
-      echoh ErrorMsg
-      echom $'error {r.label}'
+      echow $'- Error {r.label}'
     elseif r.updated
-      echoh WarningMsg
-      echom $'updated {r.label}'
+      echow $'- Updated {r.label}'
     elseif r.cloned
-      echoh WarningMsg
-      echom $'cloned {r.label}'
+      echow $'- Cloned {r.label}'
     endif
   endfor
 enddef
