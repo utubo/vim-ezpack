@@ -11,7 +11,7 @@ def MkParent(path: string): string
   return p
 enddef
 
-def GitPull(): list<any>
+def GitPull()
   const l = plugins->len()
   redraw
   echo $'Ezpack: (0/{l}) wait for install.'
@@ -76,23 +76,16 @@ def GitPull(): list<any>
   while job_count < l
     sleep 50m
   endwhile
-  var updated = []
-  var cloned = []
-  var errors = []
   for r in results
     r.out = r.out->flattennew()
     if r.status !=# 0 && r.status !=# 128
       r.errored = true
-      errors += [r.path]
     elseif r.isnew
       r.cloned = true
-      cloned += [r.path]
     elseif r.out[0]->trim() !=# 'Already up to date.'
       r.updated = true
-      updated += [r.path]
     endif
   endfor
-  return [updated, cloned, errors]
 enddef
 
 def ExecuteClonedStartPlugins()
@@ -240,18 +233,18 @@ export def Install()
   if exists('#User#EzpackInstallPre')
     doautocmd User EzpackInstallPre
   endif
-  const [updated, cloned, errors] = GitPull()
-  const autoCmdPath = CreateAutocmd()
+  GitPull()
   ExecuteClonedStartPlugins()
+  const autoCmdPath = CreateAutocmd()
   execute 'source' autoCmdPath
   redraw
   if !has('vim_starting')
     SimpleLog()
   endif
-  if !!errors
+  if results->indexof((i, v) => v.errored) !=# -1
     echoh ErrorMsg
     echom 'Ezpack: FAILED! See :EzpackLog.'
-  elseif !!updated
+  elseif results->indexof((i, v) => v.updated) !=# -1
     echoh WarningMsg
     echom 'Ezpack: Some pulgins are updated, plz restart vim.'
   else
