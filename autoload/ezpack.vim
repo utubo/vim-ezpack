@@ -184,16 +184,14 @@ export def Ezpack(...fargs_src: list<any>)
     fargs += [a]
   endfor
   const name = fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', '')
-  const s = !get(fargs, 1, '')
-  const d = s ? ['start', 'opt'] : ['opt', 'start']
   var p = add(plugins, {
     label: fargs[0],
     url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
     name: name,
     # Paths
-    start: s,
-    path: expand($'{g:ezpack_home}/{d[0]}/{name}'),
-    extra: expand($'{g:ezpack_home}/{d[1]}/{name}'),
+    start: true,
+    path: expand($'{g:ezpack_home}/start/{name}'),
+    extra: expand($'{g:ezpack_home}/opt/{name}'),
     dis: expand($'{g:ezpack_home}/disable/{name}'),
     # Options
     lazy: false,
@@ -202,6 +200,10 @@ export def Ezpack(...fargs_src: list<any>)
     cmd: [],
     map: [],
   })[-1]
+  if 1 < len(fargs)
+    p.start = false
+    [p.path, p.extra] = [p.extra, p.path]
+  endif
   var i = 0
   while true
     ++i
