@@ -36,7 +36,7 @@ INTRODUCTION						*ezpack-introduction*
 [Thx]Inspired by dein and Jetpack.
 
 Latest version:
-https://github.com/utubo/vim-ezpack.vim
+https://github.com/utubo/vim-ezpack
 
 ==============================================================================
 USAGE							*ezpack-usage*
