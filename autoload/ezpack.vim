@@ -194,11 +194,11 @@ export def Ezpack(...fargs_src: list<any>)
     url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
     name: name,
     # Paths
+    start: st,
     path: path,
     extra: extra,
     dis: dis,
     # Options
-    start: st,
     lazy: false,
     disable: false,
     on: [],
