@@ -115,7 +115,7 @@ def CreateAutocmd(): string
       cmds += [$'command! -nargs=* {c} packadd {p.name}|{c} <args>']
     endfor
     for m in p.map
-      maps += [$'{m.map} {m.key} <Cmd>u{m.map} {m.key->substitute('<', '<lt>', 'g')}<CR><Cmd>packadd {p.name}<CR>{m.key}']
+      maps += [$'{m.map} {m.key} <Cmd>u{m.map} {m.key->substitute('<', '<lt>', 'g')}<Bar>packadd {p.name}<CR>{m.key}']
     endfor
   endfor
   if !!lazys
