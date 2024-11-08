@@ -218,7 +218,7 @@ export def Ezpack(...fargs_src: list<any>)
       i += 2
     elseif a ==# '<cmd>'
       ++i
-      add(p.cmd, fargs[i])
+      p.cmd += fargs[i]->split(',')
     elseif a =~# '<[nixovct]\?map>'
       ++i
       add(p.map, { map: a->substitute('[<>]', '', 'g'), key: fargs[i] })
