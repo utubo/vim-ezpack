@@ -176,14 +176,7 @@ export def Init()
   plugins = []
 enddef
 
-export def Ezpack(...fargs_src: list<any>)
-  var fargs = []
-  for a in fargs_src
-    if typename(a) ==# 'string' && a[0] ==# '#'
-      break
-    endif
-    fargs += [a]
-  endfor
+export def Ezpack(...fargs: list<any>)
   var p = add(plugins, {
     label: '',
     url: '',
@@ -201,13 +194,13 @@ export def Ezpack(...fargs_src: list<any>)
     map: [],
   })[-1]
   var i = -1
-  while true
+  const max = len(fargs) - 1
+  while i < max
     ++i
-    const a = get(fargs, i, '')
-    if !a
+    const a = fargs[i]
+    if typename(a) ==# 'string' && a[0] ==# '#'
       break
-    endif
-    if a ==# '<opt>'
+    elseif a ==# '<opt>'
       # nop
     elseif a ==# '<lazy>'
       p.lazy = true
@@ -231,15 +224,16 @@ export def Ezpack(...fargs_src: list<any>)
       p.extra = expand($'{g:ezpack_home}/opt/{name}')
       p.dis = expand($'{g:ezpack_home}/disable/{name}')
     else
-      echoh ErrorMsg
-      echom $'Ezpack: Bad argument: "{a}"'
-      echoh Normal
-    endif
-    if 1 < len(fargs)
-      p.start = false
-      [p.path, p.extra] = [p.extra, p.path]
+      throw $'Ezpack: Bad argument: "{a}"'
     endif
   endwhile
+  if !p.name
+    throw $'Ezpack: Plugin-name not found: {fargs->join(' ')}'
+  endif
+  if 1 < len(fargs)
+    p.start = false
+    [p.path, p.extra] = [p.extra, p.path]
+  endif
 enddef
 
 export def Install()
