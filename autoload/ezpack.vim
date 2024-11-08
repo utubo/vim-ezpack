@@ -227,6 +227,7 @@ export def Ezpack(...fargs_src: list<any>)
     else
       echoh ErrorMsg
       echom $'Ezpack: Bad argument: "{a}"'
+      echoh Normal
     endif
   endwhile
 enddef
