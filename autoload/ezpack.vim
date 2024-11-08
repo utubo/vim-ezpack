@@ -228,7 +228,7 @@ export def Ezpack(...fargs: list<any>)
     endif
   endwhile
   if !p.name
-    throw $'Ezpack: Plugin-name not found: {fargs->join(' ')}'
+    throw $'Ezpack: Plugin-name is not found: {fargs->join(' ')}'
   endif
   if 1 < len(fargs)
     p.start = false
