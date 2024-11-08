@@ -66,15 +66,18 @@ EXAMPLES						*ezpack-examples*
 
 	EzpackInit
 	Ezpack utubo/vim-ezpack <opt>
+
+	##########
+	# examples
 	Ezpack example/install_to_start
 	Ezpack example/install_to_opt <opt>
-	Ezpack example/lazy_load <lazy>
-	Ezpack example/u_can_set_any_event <on> Filetype csv
+	Ezpack example/packadd_after_5ms_from_vimenter <lazy>
+	Ezpack example/packadd_on_event <on> Filetype csv
 	Ezpack example/packadd_on_command <cmd> Example
-	Ezpack example/comment #comment
-	Ezpack example/temporary_disable <disable> here is liked comment
+	Ezpack example/move_to_disable_dir <disable>
 	Ezpack example/packadd_on_key <nmap> <Leader>N
 	# supports nmap, imap, xmap, vmap, tmap, cmap, omap, map
+	##########
 
 	export def Install()
 	  ezpack#Install()
