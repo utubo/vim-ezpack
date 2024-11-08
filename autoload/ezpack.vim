@@ -184,16 +184,15 @@ export def Ezpack(...fargs_src: list<any>)
     endif
     fargs += [a]
   endfor
-  const name = fargs[0]->matchstr('[^/]*$')->substitute('\.git$', '', '')
   var p = add(plugins, {
-    label: fargs[0],
-    url: fargs[0] =~# '\.git$' ? fargs[0] : $'https://github.com/{fargs[0]}.git',
-    name: name,
-    # Paths
+    label: '',
+    url: '',
+    name: '',
+    # Path
     start: true,
-    path: expand($'{g:ezpack_home}/start/{name}'),
-    extra: expand($'{g:ezpack_home}/opt/{name}'),
-    dis: expand($'{g:ezpack_home}/disable/{name}'),
+    path: '',
+    extra: '',
+    dis: '',
     # Options
     lazy: false,
     disable: false,
@@ -201,11 +200,7 @@ export def Ezpack(...fargs_src: list<any>)
     cmd: [],
     map: [],
   })[-1]
-  if 1 < len(fargs)
-    p.start = false
-    [p.path, p.extra] = [p.extra, p.path]
-  endif
-  var i = 0
+  var i = -1
   while true
     ++i
     const a = get(fargs, i, '')
@@ -227,10 +222,22 @@ export def Ezpack(...fargs_src: list<any>)
     elseif a =~# '<[nixovct]\?map>'
       ++i
       add(p.map, { map: a->substitute('[<>]', '', 'g'), key: fargs[i] })
+    elseif !p.name
+      p.label = a
+      p.url = a =~# '\.git$' ? a : $'https://github.com/{a}.git'
+      const name = a->matchstr('[^/]*$')->substitute('\.git$', '', '')
+      p.name = name
+      p.path = expand($'{g:ezpack_home}/start/{name}')
+      p.extra = expand($'{g:ezpack_home}/opt/{name}')
+      p.dis = expand($'{g:ezpack_home}/disable/{name}')
     else
       echoh ErrorMsg
       echom $'Ezpack: Bad argument: "{a}"'
       echoh Normal
+    endif
+    if 1 < len(fargs)
+      p.start = false
+      [p.path, p.extra] = [p.extra, p.path]
     endif
   endwhile
 enddef

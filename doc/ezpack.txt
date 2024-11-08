@@ -74,9 +74,10 @@ EXAMPLES						*ezpack-examples*
 	Ezpack example/packadd_after_5ms_from_vimenter <lazy>
 	Ezpack example/packadd_on_event <on> Filetype csv
 	Ezpack example/packadd_on_command <cmd> ExampleCommand
-	Ezpack example/move_to_disable_dir <disable>
 	Ezpack example/packadd_on_key <nmap> <Leader>N
 	# supports nmap, imap, xmap, vmap, tmap, cmap, omap, map
+	Ezpack example/move_to_disable_dir <disable>
+	Ezpack <opt> example/u_can_write_options_before_plugins_name
 	##########
 
 	export def Install()
