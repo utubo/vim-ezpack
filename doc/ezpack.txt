@@ -50,7 +50,7 @@ EXAMPLES						*ezpack-examples*
 .vimrc
 >
 	vim9script
-	g:ezpack_home = expand($'{&pp->split(',')[0]}/pack/ezpack')
+	g:ezpack_home = expand($'{&rtp->split(',')[0]}/pack/ezpack')
 	if !isdirectory(g:ezpack_home)
 	  system($'git clone https://github.com/utubo/vim-ezpack.git {g:ezpack_home}/opt/vim-ezpack')
 	  vimrc#ezpack#Install()
