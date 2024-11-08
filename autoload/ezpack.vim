@@ -177,7 +177,7 @@ export def Init()
 enddef
 
 export def Ezpack(...fargs: list<any>)
-  var p = add(plugins, {
+  var p = {
     label: '',
     url: '',
     name: '',
@@ -192,7 +192,7 @@ export def Ezpack(...fargs: list<any>)
     on: [],
     cmd: [],
     map: [],
-  })[-1]
+  }
   var i = -1
   const max = len(fargs) - 1
   while i < max
@@ -234,6 +234,7 @@ export def Ezpack(...fargs: list<any>)
     p.start = false
     [p.path, p.extra] = [p.extra, p.path]
   endif
+  add(plugins, p)
 enddef
 
 export def Install()
