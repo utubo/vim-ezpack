@@ -41,6 +41,7 @@ def GitPull()
         redraw
         echo $'Ezpack: ({job_count}/{l}) disable {r.label}'
         r.status = rename(p.path, p.dis)
+        r.updated = true
       else
         r.status = 0
       endif
@@ -82,7 +83,7 @@ def GitPull()
       r.errored = true
     elseif r.isnew
       r.cloned = true
-    elseif r.out[0]->trim() !=# 'Already up to date.'
+    elseif !!r.out[0] && r.out[0]->trim() !=# 'Already up to date.'
       r.updated = true
     endif
   endfor
@@ -211,7 +212,9 @@ export def Ezpack(...fargs_src: list<any>)
     if !a
       break
     endif
-    if a ==# '<lazy>'
+    if a ==# '<opt>'
+      # nop
+    elseif a ==# '<lazy>'
       p.lazy = true
     elseif a ==# '<disable>'
       p.disable = true
