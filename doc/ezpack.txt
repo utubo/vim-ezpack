@@ -1,4 +1,4 @@
-*ezpack.txt*	a summary
+*ezpack.txt*	a simple vim plugin manager.
 
 Author  : utubo
 License : MIT license  {{{
