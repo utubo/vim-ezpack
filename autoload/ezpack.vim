@@ -113,7 +113,7 @@ def CreateAutocmd(): string
       lines += [$'  au {o} ++once packadd {p.name}']
     endfor
     for c in p.cmd
-      cmds += [$'command! -nargs=* {c} delc {c}|packadd {p.name}|{c} <args>']
+      cmds += [$'silent! command -nargs=* {c} delc {c}|packadd {p.name}|{c} <args>']
     endfor
     for m in p.map
       maps += [$'{m.map} {m.key} <Cmd>u{m.map} {m.key->substitute('<', '<lt>', 'g')}<Bar>packadd {p.name}<CR>{m.key}']
