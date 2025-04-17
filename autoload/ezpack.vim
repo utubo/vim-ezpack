@@ -55,7 +55,8 @@ def GitPull()
     if !isdirectory(p.path)
       r.isnew = true
       r.cwd = MkParent(p.path)
-      r.gitcmd = $'git clone --depth=1 {p.url}'
+      var b = !p.branch ? '' : $'-b {p.branch} '
+      r.gitcmd = $'git clone {b}--depth=1 {p.url}'
     endif
     const ExitCb = (job, status) => {
       ++job_count
@@ -180,6 +181,7 @@ export def Ezpack(...fargs: list<any>)
   var p = {
     label: '',
     url: '',
+    branch: '',
     name: '',
     # Path
     start: true,
@@ -215,6 +217,9 @@ export def Ezpack(...fargs: list<any>)
     elseif a =~# '<[nixovct]\?map>'
       ++i
       add(p.map, { map: a->substitute('[<>]', '', 'g'), key: fargs[i] })
+    elseif a ==# '<branch>'
+      ++i
+      p.branch = fargs[i]
     elseif !p.name
       p.label = a
       p.url = a =~# '\.git$' ? a : $'https://github.com/{a}.git'

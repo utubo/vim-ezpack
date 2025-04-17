@@ -79,6 +79,8 @@ EXAMPLES						*ezpack-examples*
 	Ezpack example/move_to_disable_dir <disable>
 	Ezpack example/comment # this is comment
 	Ezpack <opt> example/u_can_write_options_before_plugins_name
+	# pending...
+	# Ezpack example/foo <branch> develop
 	##########
 
 	export def Install()
