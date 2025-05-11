@@ -67,8 +67,9 @@ EXAMPLES						*ezpack-examples*
 	EzpackInit
 	Ezpack utubo/vim-ezpack <opt>
 
-	##########
-	# options examples
+	##############################
+	# Plugins
+
 	Ezpack example/install_to_start
 	Ezpack example/install_to_opt <opt>
 	Ezpack example/packadd_after_5ms_from_vimenter <lazy>
@@ -79,9 +80,11 @@ EXAMPLES						*ezpack-examples*
 	Ezpack example/move_to_disable_dir <disable>
 	Ezpack example/comment # this is comment
 	Ezpack <opt> example/u_can_write_options_before_plugins_name
-	# pending...
+
+	# <branch> option is pending...
 	# Ezpack example/foo <branch> develop
-	##########
+
+	##############################
 
 	export def Install()
 	  ezpack#Install()
