@@ -4,6 +4,7 @@ g:ezpack_home = get(g:, 'ezpack_home', expand($'{&pp->split(',')[0]}/pack/ezpack
 
 var plugins: list<any> = []
 var results: list<any> = []
+var default_options: any = {}
 
 def MkParent(path: string): string
   const p = path->fnamemodify(':p:h')
@@ -177,6 +178,10 @@ export def Init()
   plugins = []
 enddef
 
+export def SetupDefaultOptions(options: any)
+  default_options = options
+enddef
+
 export def Ezpack(...fargs: list<any>)
   var p = {
     label: '',
@@ -194,7 +199,7 @@ export def Ezpack(...fargs: list<any>)
     on: [],
     cmd: [],
     map: [],
-  }
+  }->extend(default_options)
   var i = -1
   const max = len(fargs) - 1
   while i < max
@@ -202,19 +207,26 @@ export def Ezpack(...fargs: list<any>)
     const a = fargs[i]
     if typename(a) ==# 'string' && a[0] ==# '#'
       break
+    elseif a ==# '<start>'
+      p.start = true
     elseif a ==# '<opt>'
-      # nop
+      p.start = false
     elseif a ==# '<lazy>'
+      p.start = false
       p.lazy = true
     elseif a ==# '<disable>'
+      p.start = false
       p.disable = true
     elseif a ==# '<on>'
+      p.start = false
       add(p.on, fargs[i + 1 : i + 2]->join(' '))
       i += 2
     elseif a ==# '<cmd>'
+      p.start = false
       ++i
       p.cmd += fargs[i]->split(',')
     elseif a =~# '<[nixovct]\?map>'
+      p.start = false
       ++i
       add(p.map, { map: a->substitute('[<>]', '', 'g'), key: fargs[i] })
     elseif a ==# '<branch>'
@@ -235,8 +247,7 @@ export def Ezpack(...fargs: list<any>)
   if !p.name
     throw $'Ezpack: Plugin-name is not found: {fargs->join(' ')}'
   endif
-  if 1 < len(fargs)
-    p.start = false
+  if !p.start
     [p.path, p.extra] = [p.extra, p.path]
   endif
   add(plugins, p)
