@@ -176,6 +176,7 @@ enddef
 
 export def Init()
   plugins = []
+  SetupDefaultOptions({ start: true, lazy: false })
 enddef
 
 export def SetupDefaultOptions(options: any)
