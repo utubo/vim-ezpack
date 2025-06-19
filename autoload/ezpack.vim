@@ -67,10 +67,16 @@ def GitPull()
       echo $'Ezpack: ({job_count}/{l}) {r.gitcmd->split(' ')[1]} {r.label}'
     }
     const OutCb = (ch, msg) => add(r.out, [msg])
-    while g:ezpack_num_threads < job_count
-      sleep 50m
-    endwhile
-    job_start(r.gitcmd, { cwd: r.cwd, exit_cb: ExitCb, out_cb: OutCb, err_cb: OutCb })
+    if g:ezpack_num_threads < 2
+      chdir(r.cwd)
+      OutCb(0, [system(r.gitcmd)])
+      ExitCb(0, v:shell_error)
+    else
+      while g:ezpack_num_threads < job_count
+        sleep 50m
+      endwhile
+      job_start(r.gitcmd, { cwd: r.cwd, exit_cb: ExitCb, out_cb: OutCb, err_cb: OutCb })
+    endif
   endfor
   chdir(current)
   while job_count < l
