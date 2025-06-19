@@ -19,6 +19,7 @@ def GitPull()
   var job_count = 0
   results = []
   const current = getcwd()
+  g:ezpack_num_threads = get(g:, 'ezpack_maxjobs', 9)
   for p in plugins
     var r = add(results, {
       label: p.label,
@@ -66,14 +67,10 @@ def GitPull()
       echo $'Ezpack: ({job_count}/{l}) {r.gitcmd->split(' ')[1]} {r.label}'
     }
     const OutCb = (ch, msg) => add(r.out, [msg])
-    if has('win32')
-      job_start(r.gitcmd, { cwd: r.cwd, exit_cb: ExitCb, out_cb: OutCb, err_cb: OutCb })
-    else
-      # too many jobs kill vim on sakura rental server.
-      chdir(r.cwd)
-      OutCb(0, [system(r.gitcmd)])
-      ExitCb(0, v:shell_error)
-    endif
+    while g:ezpack_maxjobs < job_count
+      sleep 50m
+    endwhile
+    job_start(r.gitcmd, { cwd: r.cwd, exit_cb: ExitCb, out_cb: OutCb, err_cb: OutCb })
   endfor
   chdir(current)
   while job_count < l
