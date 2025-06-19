@@ -19,7 +19,7 @@ def GitPull()
   var job_count = 0
   results = []
   const current = getcwd()
-  g:ezpack_num_threads = get(g:, 'ezpack_maxjobs', 9)
+  g:ezpack_num_threads = get(g:, 'ezpack_num_threads', 9)
   for p in plugins
     var r = add(results, {
       label: p.label,
@@ -67,7 +67,7 @@ def GitPull()
       echo $'Ezpack: ({job_count}/{l}) {r.gitcmd->split(' ')[1]} {r.label}'
     }
     const OutCb = (ch, msg) => add(r.out, [msg])
-    while g:ezpack_maxjobs < job_count
+    while g:ezpack_num_threads < job_count
       sleep 50m
     endwhile
     job_start(r.gitcmd, { cwd: r.cwd, exit_cb: ExitCb, out_cb: OutCb, err_cb: OutCb })

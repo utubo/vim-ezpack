@@ -105,7 +105,7 @@ g:ezpack_home					*ezpack-g:ezpack_home*
 	Directory that install plugins.
 	Default is ~/.vim/pack/ezpack or ~/vimfiles/pack/ezpack.
 
-g:ezpack_num_thread				*ezpack-g:ezpack_num_thread*
+g:ezpack_num_threads				*ezpack-g:ezpack_num_threads*
 	Max number of threads for install plugins.
 	Default is 9.
 
