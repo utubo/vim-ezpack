@@ -78,9 +78,9 @@ EXAMPLES						*ezpack-examples*
 	Ezpack example/packadd_on_command <cmd> Command1,Command2
 	Ezpack example/packadd_on_key <nmap> <Leader>N
 
-	# NOTE: <pre> and <post> work only with <opt>
-	Ezpack example/foo <opt> <pre> echo 'execute before packadd'
-	Ezpack example/foo <opt> <post> echo 'execute after packadd'
+	# NOTE: <pre> and <post> work only with <lazy>
+	Ezpack example/foo <lazy> <pre> echo 'execute before packadd'
+	Ezpack example/bar <lazy> <post> echo 'execute after packadd'
 
 	# supports nmap, imap, xmap, vmap, tmap, cmap, omap, map
 	Ezpack example/move_to_disable_dir <disable>
