@@ -77,9 +77,16 @@ EXAMPLES						*ezpack-examples*
 	Ezpack example/packadd_on_event <on> Filetype csv
 	Ezpack example/packadd_on_command <cmd> Command1,Command2
 	Ezpack example/packadd_on_key <nmap> <Leader>N
+
+	# NOTE: <pre> and <post> work only with <opt>
+	Ezpack example/foo <opt> <pre> echo 'execute before packadd'
+	Ezpack example/foo <opt> <post> echo 'execute after packadd'
+
 	# supports nmap, imap, xmap, vmap, tmap, cmap, omap, map
 	Ezpack example/move_to_disable_dir <disable>
+
 	Ezpack example/comment # this is comment
+
 	Ezpack <opt> example/u_can_write_options_before_plugins_name
 
 	# <branch> option is pending...

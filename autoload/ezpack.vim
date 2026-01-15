@@ -111,17 +111,18 @@ def CreateAutocmd(): string
   var maps = []
   var lines = ['vim9script', 'augroup ezpack', '  au!']
   for p in plugins
+    const pk = (p.pre + [$'packadd {p.name}'] + p.post)->join('|')
     if p.lazy
-      lazys += [p.name]
+      lazys += [pk]
     endif
     for o in p.on
-      lines += [$'  au {o} ++once packadd {p.name}']
+      lines += [$'  au {o} ++once {pk}']
     endfor
     for c in p.cmd
-      cmds += [$'silent! command -nargs=* {c} delc {c}|packadd {p.name}|{c} <args>']
+      cmds += [$'silent! command -nargs=* {c} delc {c}|{pk}|{c} <args>']
     endfor
     for m in p.map
-      maps += [$'{m.map} {m.key} <Cmd>u{m.map} {m.key->substitute('<', '<lt>', 'g')}<Bar>packadd {p.name}<CR>{m.key}']
+      maps += [$'{m.map} {m.key} <Cmd>u{m.map} {m.key->substitute('<', '<lt>', 'g')}<Bar>{pk->substitute('|', '<BAR>', 'g')}<CR>{m.key}']
     endfor
   endfor
   if !!lazys
@@ -140,7 +141,7 @@ def CreateAutocmd(): string
       "const interval = get(g:, 'ezpack_lazy_interval', 5)",
       'def LazyLoad(t: number)',
       '  if index < max',
-      "    execute 'packadd' plugins[index]",
+      '    execute plugins[index]',
       '    ++index',
       '    timer_start(interval, LazyLoad)',
       '  endif',
@@ -174,6 +175,14 @@ def SimpleLog()
   endif
 enddef
 
+def AddParam(p: dict<any>, param: dict<any>)
+  if !!param.name
+    p[param.name] += [param.value->join(' ')]
+  endif
+  param.name = ''
+  param.value = []
+enddef
+
 # -----------------------
 # Interface
 
@@ -203,11 +212,15 @@ export def Ezpack(...fargs: list<any>)
     on: [],
     cmd: [],
     map: [],
+    pre: [],
+    post: [],
   }->extend(default_options)
+  var param = { name: '', value: [] }
   var i = -1
   const max = len(fargs) - 1
   while i < max
     ++i
+    var more = false
     const a = fargs[i]
     if typename(a) ==# 'string' && a[0] ==# '#'
       break
@@ -236,6 +249,17 @@ export def Ezpack(...fargs: list<any>)
     elseif a ==# '<branch>'
       ++i
       p.branch = fargs[i]
+    elseif a ==# '<pre>'
+      p->AddParam(param)
+      param.name = 'pre'
+      more = true
+    elseif a ==# '<post>'
+      p->AddParam(param)
+      param.name = 'post'
+      more = true
+    elseif !!param.name
+      param.value += [a]
+      more = true
     elseif !p.name
       p.label = a
       p.url = a =~# '\.git$' ? a : $'https://github.com/{a}.git'
@@ -247,7 +271,11 @@ export def Ezpack(...fargs: list<any>)
     else
       throw $'Ezpack: Bad argument: "{a}"'
     endif
+    if !more
+      p->AddParam(param)
+    endif
   endwhile
+  p->AddParam(param)
   if !p.name
     throw $'Ezpack: Plugin-name is not found: {fargs->join(' ')}'
   endif
