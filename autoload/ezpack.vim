@@ -5,6 +5,7 @@ g:ezpack_home = get(g:, 'ezpack_home', expand($'{&pp->split(',')[0]}/pack/ezpack
 var plugins: list<any> = []
 var results: list<any> = []
 var default_options: any = {}
+var posts: list<any> = []
 
 def MkParent(path: string): string
   const p = path->fnamemodify(':p:h')
@@ -150,6 +151,7 @@ def CreateAutocmd(): string
   endif
   lines += cmds
   lines += maps
+  lines += posts
   const path = expand($'{g:ezpack_home}/start/_/plugin/_.vim')
   MkParent(path)
   writefile(lines, path)
@@ -188,6 +190,7 @@ enddef
 
 export def Init()
   plugins = []
+  posts = []
   SetupDefaultOptions({ start: true, lazy: false })
 enddef
 
@@ -359,3 +362,8 @@ export def Log()
   endfor
   echo 'EOL'
 enddef
+
+export def EzpackPost(...cmds: list<any>)
+  posts += [cmds->join(' ')]
+enddef
+

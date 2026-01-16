@@ -92,6 +92,9 @@ EXAMPLES						*ezpack-examples*
 	# <branch> option is pending...
 	# Ezpack example/foo <branch> develop
 
+	EzpackPost echo 'This append to end of'
+	EzpackPost echo '  ~/.vim/pack/ezpack/start/_plugins/_.vim'
+
 	##############################
 
 	export def Install()
