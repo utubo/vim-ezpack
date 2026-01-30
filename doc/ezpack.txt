@@ -76,13 +76,16 @@ EXAMPLES						*ezpack-examples*
 	Ezpack example/packadd_after_5ms_from_vimenter <lazy>
 	Ezpack example/packadd_on_event <on> Filetype csv
 	Ezpack example/packadd_on_command <cmd> Command1,Command2
+
+	# Supports nmap, imap, xmap, vmap, tmap, cmap, omap, map
 	Ezpack example/packadd_on_key <nmap> <Leader>N
 
-	# NOTE: <pre> and <post> work only with <lazy>
+	# NOTE:
+	#   <pre> and <post> does not work when
+	#   the plugin is installed to start.
 	Ezpack example/foo <lazy> <pre> echo 'execute before packadd'
 	Ezpack example/bar <lazy> <post> echo 'execute after packadd'
 
-	# supports nmap, imap, xmap, vmap, tmap, cmap, omap, map
 	Ezpack example/move_to_disable_dir <disable>
 
 	Ezpack example/comment # this is comment
