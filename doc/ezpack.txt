@@ -63,6 +63,7 @@ EXAMPLES						*ezpack-examples*
 ~/.vim/autoload/vimrc/ezpack.vim
 >
 	vim9script
+	system($'cd {g:ezpack_home} && git pull')
 	packadd vim-ezpack
 
 	EzpackInit
