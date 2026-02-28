@@ -241,6 +241,14 @@ export def Ezpack(...fargs: list<any>)
       p.start = false
       add(p.on, fargs[i + 1 : i + 2]->join(' '))
       i += 2
+    elseif a ==# '<mode>'
+      p.start = false
+      add(p.on, $'ModeChanged *:{fargs[i + 1]}')
+      i += 1
+    elseif a ==# '<ft>'
+      p.start = false
+      add(p.on, $'Filetype {fargs[i + 1]}')
+      i += 1
     elseif a ==# '<cmd>'
       p.start = false
       ++i
